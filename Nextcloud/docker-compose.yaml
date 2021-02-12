@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb
+    command: --max_allowed_packet=32505856 --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    # cpus: 4
+    restart: always
+    volumes:
+      - /data/hdd/Nextcloud/db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+    env_file:
+      - db.env
+    networks: 
+      - default
+
+  redis:
+    image: redis:alpine
+    # cpus: 4
+    networks: 
+      - default
+    restart: always
+
+  nextcloud:
+    image: nextcloud:apache
+    # cpus: 4
+    restart: always
+    expose: 
+     - 80
+    # ports:
+    #   - 10080:80
+    volumes:
+      - /data/hdd/Nextcloud/nextcloud:/var/www/html
+      - /data/hdd/Transmission/downloads:/downloads/Transmission
+      - /data/hdd/Cloudreve/aria2/downloads:/downloads/aria2
+    environment:
+      - MYSQL_HOST=db
+      - REDIS_HOST=redis
+      - PUID=33
+      - PGID=33
+      - TZ="Asia/Shanghai"
+    env_file:
+      - db.env
+      - nextcloud.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=80"
+      - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.example.org`)"
+      # - "traefik.http.services.nextcloud.loadbalancer.server.port=5212"
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.tls.certresolver=myresolver"
+    networks: 
+      - default
+      - proxy-tier
+    depends_on:
+      - db
+      - redis
+
+  cron:
+    image: nextcloud:apache
+    restart: always
+    # cpus: 4
+    volumes:
+      - /data/hdd/Nextcloud/nextcloud:/var/www/html
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+      - redis
+    networks: 
+      - default
+      
+networks:
+  proxy-tier:
+    external:
+      name:  traefik
