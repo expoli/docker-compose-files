@@ -1,0 +1,51 @@
+version: "2.1"
+services:
+  app:
+    image: linuxserver/transmission:arm64v8-latest
+    # cpus: 4
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TRANSMISSION_WEB_HOME=/combustion-release/ #optional
+      - USER= #optional
+      - PASS= #optional
+      - TZ="Asia/Shanghai"
+
+    volumes:
+      - /data/hdd/Transmission/config:/config
+      - /data/hdd/Transmission/downloads:/downloads
+      - /data/hdd/Transmission/watch:/watch
+    network_mode: host
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.port=9091"
+#      - "traefik.http.services.transmission.loadbalancer.server.port=9091"
+#      - "traefik.http.routers.transmission.rule=Host(`transmission.example.org`)"
+#      - "traefik.http.routers.transmission.entrypoints=websecure"
+#      - "traefik.http.routers.transmission.service=api@internal"
+#      - "traefik.http.routers.transmission.tls.certresolver=myresolver"
+    #ports:
+    #  - 9091:9091
+    #  - 51413:51413
+    #  - 51413:51413/udp
+    restart: always
+    
+  transmission:
+    build: ./web
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=80"
+      - "traefik.http.routers.transmission.rule=Host(`transmission.example.org`)"
+      - "traefik.http.routers.transmission.entrypoints=websecure"
+      - "traefik.http.routers.transmission.tls.certresolver=myresolver"
+    depends_on:
+      - app
+    networks:
+      - proxy-tier
+      
+networks:
+  proxy-tier:
+    external:
+      name: traefik
