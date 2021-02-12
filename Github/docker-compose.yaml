@@ -1,0 +1,20 @@
+version: "2.1"
+services:
+  github:
+    build: ./web
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=80"
+      - "traefik.http.routers.github.rule=Host(`github.example.org`)"
+      - "traefik.http.routers.github.entrypoints=websecure"
+      - "traefik.http.routers.github.tls.certresolver=myresolver"
+#    depends_on:
+#      - app
+    networks:
+      - proxy-tier
+      
+networks:
+  proxy-tier:
+    external:
+      name: traefik
