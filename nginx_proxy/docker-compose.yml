@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+
+  proxy:
+    build: ./proxy
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen: "true"
+    volumes:
+      - certs:/etc/nginx/certs
+      - vhost.d:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    environment:
+      - ENABLE_IPV6=true 
+    networks:
+      - proxy-tier
+
+  letsencrypt-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    restart: always
+    volumes:
+      - certs:/etc/nginx/certs
+      - vhost.d:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - DEFAULT_EMAIL=me@expoli.tech
+      - NGINX_DOCKER_GEN_CONTAINER=nginx_proxy_proxy_1
+    networks:
+      - proxy-tier
+    depends_on:
+      - proxy
+
+volumes:
+  certs:
+    external:
+      name: fpm_certs
+  vhost.d:
+    external:
+      name: fpm_vhost.d
+  html:
+    external:
+      name: fpm_html
+
+networks:
+  proxy-tier:
+    external:
+      name:  proxy-tier
