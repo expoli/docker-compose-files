@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.5
+    command: --max_allowed_packet=32505856 --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    # environment:
+    #   - MYSQL_ROOT_PASSWORD=tangcuyu
+    #   - MYSQL_PASSWORD=tangcuyu
+    #   - MYSQL_DATABASE=bolo
+    #   - MYSQL_USER=bolo
+    env_file:
+      - bolo-env.env
+    networks: 
+      - default
+
+
+  bolo:
+    image: tangcuyu/bolo-solo:latest
+    restart: always
+    container_name: "bolo"
+    expose:
+      - "8080"
+    # 主题与文章挂载目录
+    volumes: 
+      - /etc/localtime:/etc/localtime:ro
+    #   - ./web/markdowns:/opt/solo/markdowns:rw
+    #   - ./theme/solo-nexmoe:/opt/solo/skins/nexmoe
+    env_file:
+      - bolo-env.env
+    command: --listen_port=8080 --server_scheme=https --server_host=blog.example.org --server_port=443 --lute_http=http://lute:8249
+    dns: 8.8.8.8
+    labels:
+      - traefik.enable=true
+      - traefik.port=8080
+      - traefik.http.routers.bolo.rule=Host(`blog.example.org`)
+      - traefik.http.routers.bolo.tls=true
+      - "traefik.http.routers.cloudreve.entrypoints=websecure"
+      - traefik.http.routers.bolo.tls.certresolver=myresolver
+    depends_on:
+      - db
+    networks:
+      - proxy-tier
+      - default
+
+  lute:
+    image: b3log/lute-http
+    restart: always 
+    expose: 
+      - "8249"
+    networks: 
+      - default
+
+networks:
+  proxy-tier:
+    external:
+      name:  traefik
+  default:
