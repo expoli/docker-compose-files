@@ -1,0 +1,36 @@
+version: '3.7'
+
+services: 
+  qbittorrent:
+    image: ghcr.io/linuxserver/qbittorrent
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+#      - TZ=Aisa/Shanghai
+      - WEBUI_PORT=8888
+    restart: always
+
+    volumes:
+      - /data/1TB/qbittorrent/config:/config
+      - /data/1TB/downloads/complete:/downloads
+    network_mode: host
+
+  qbittorrent-web:
+    build: ./web
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=80"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.example.org`)"
+      - "traefik.http.routers.qbittorrent.entrypoints=websecure"
+      - "traefik.http.routers.qbittorrent.tls.certresolver=myresolver"
+    depends_on:
+      - qbittorrent
+    networks:
+      - proxy-tier
+networks:
+  proxy-tier:
+    external:
+      name:  traefik
+
