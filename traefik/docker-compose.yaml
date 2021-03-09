@@ -6,9 +6,6 @@ services:
     image: "traefik:v2.4"
     container_name: "traefik"
     restart: always
-    # cpus: 4
-    # cpu_count: 4
-    # cpuset: 0-3
     labels: 
       - "traefik.enable=true"
      # - "traefik.port=8080"
@@ -28,7 +25,7 @@ services:
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
       # - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.myresolver.acme.email=me@expoli.tech"
+      - "--certificatesresolvers.myresolver.acme.email=me@example.org"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       - "--metrics.prometheus=true"
       - "--entryPoints.metrics.address=:8082"

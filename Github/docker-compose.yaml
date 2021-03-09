@@ -9,8 +9,6 @@ services:
       - "traefik.http.routers.github.rule=Host(`github.example.org`)"
       - "traefik.http.routers.github.entrypoints=websecure"
       - "traefik.http.routers.github.tls.certresolver=myresolver"
-#    depends_on:
-#      - app
     networks:
       - proxy-tier
       
