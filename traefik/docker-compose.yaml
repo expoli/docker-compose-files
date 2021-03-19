@@ -6,18 +6,20 @@ services:
     image: "traefik:v2.4"
     container_name: "traefik"
     restart: always
-    labels: 
-      - "traefik.enable=true"
-     # - "traefik.port=8080"
-      - "traefik.http.services.dummyService.loadbalancer.server.port=8080"
-      - "traefik.http.routers.traefik_http.service=api@internal"
-      - "traefik.http.routers.monitor.rule=Host(`monitor.example.org`)"
-      - "traefik.http.routers.monitor.entrypoints=websecure"
-      - "traefik.http.routers.monitor.tls.certresolver=myresolver"
+#     labels: 
+#     # 取消注释即可使用 traefik 面板
+#      - "traefik.enable=true"
+#      - "traefik.port=8080"
+#      - "traefik.http.services.dummyService.loadbalancer.server.port=8080"
+#      - "traefik.http.routers.traefik_http.service=api@internal"
+#      - "traefik.http.routers.monitor.rule=Host(`monitor.example.org`)" 
+#      - "traefik.http.routers.monitor.entrypoints=websecure"
+#      - "traefik.http.routers.monitor.tls.certresolver=myresolver"
 
     command:
 #      - "--log.level=DEBUG"
-      - "--api.insecure=true"
+# 取消注释即可使用 traefik 面板
+#      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
@@ -25,13 +27,18 @@ services:
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
       # - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesResolvers.myresolver.acme.dnsChallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
       - "--certificatesresolvers.myresolver.acme.email=me@example.org"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      - "--metrics.prometheus=true"
-      - "--entryPoints.metrics.address=:8082"
-      - "--metrics.prometheus.entryPoint=metrics"
+      # 强制 HTTPS 跳转
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https
+      # 取消注释即可使用 prometheus 搜集性能数据
+#       - "--metrics.prometheus=true"
+#       - "--entryPoints.metrics.address=:8082"
+#       - "--metrics.prometheus.entryPoint=metrics"
+#       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+#       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
     # ports:
     #   - "80:80"
     #   - "443:443"
@@ -40,19 +47,19 @@ services:
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+# 测试容器
+#   whoami:
+#     image: "traefik/whoami"
+#     container_name: "simple-service"
+#     restart: always
+#     labels:
+#       - "traefik.enable=true"
+#       - "traefik.http.routers.whoami.rule=Host(`whoami.example.org`)"
+#       - "traefik.http.routers.whoami.entrypoints=websecure"
+#       - "traefik.http.routers.whoami.tls.certresolver=myresolver"
 
-  whoami:
-    image: "traefik/whoami"
-    container_name: "simple-service"
-    restart: always
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.example.org`)"
-      - "traefik.http.routers.whoami.entrypoints=websecure"
-      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
-
-    networks:
-      - proxy-tier
+#     networks:
+#       - proxy-tier
 
 networks:
   proxy-tier:
