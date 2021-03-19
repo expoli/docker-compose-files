@@ -1,4 +1,6 @@
 # docker-compose-files
+
+此项目将 traefik 与后台服务进行了分离，在启动 traefik 之后、对后端服务的操作（启动、停止）不影响 Web 服务器的运行，不需要重启 traefik，保证了其他服务的运行稳定性。
  
 ## 使用方法：
 
