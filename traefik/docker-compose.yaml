@@ -14,7 +14,7 @@ services:
       - "traefik.http.routers.monitor.rule=Host(`monitor.example.org`)"
       - "traefik.http.routers.monitor.entrypoints=websecure"
       - "traefik.http.routers.monitor.tls.certresolver=myresolver"
-     # - "traefik.http.middlewares.test-auth.basicauth.users=tangcuyuha:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
+
     command:
 #      - "--log.level=DEBUG"
       - "--api.insecure=true"
