@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+
+  upload-labs:
+    image: "c0ny1/upload-labs"
+    container_name: "ctf_upload_labs"
+    restart: always
+    expose:
+      - "80"
+    dns: 8.8.8.8
+    cpus: 0.2
+    labels:
+      - traefik.enable=true
+      - traefik.port=80
+      - traefik.http.routers.upload-labs.rule=Host(`upload_labs.example.org`)
+      - traefik.http.routers.upload-labs.tls=true
+      - traefik.http.routers.upload-labs.entrypoints=websecure
+      - traefik.http.routers.upload-labs.tls.certresolver=myresolver
+    networks:
+      - default
+
+networks:
+  default:

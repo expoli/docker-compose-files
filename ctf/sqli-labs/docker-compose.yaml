@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+
+  sqli-labs:
+    image: "c0ny1/sqli-labs:0.1"
+    container_name: "ctf_sqli_labs"
+    restart: always
+    cpus: 0.2
+    expose:
+      - "80"
+    dns: 8.8.8.8
+    labels:
+      - traefik.enable=true
+      - traefik.port=80
+      - traefik.http.routers.sqli-labs.rule=Host(`sqli_labs.example.org`)
+      - traefik.http.routers.sqli-labs.tls=true
+      - traefik.http.routers.sqli-labs.entrypoints=websecure
+      - traefik.http.routers.sqli-labs.tls.certresolver=myresolver
+
+    networks:
+      - default
+
+networks:
+  default:

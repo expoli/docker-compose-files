@@ -1,0 +1,52 @@
+version: '2.3'
+
+services:
+
+  dvwa_web:
+    image: cytopia/dvwa:php-${PHP_VERSION:-7.2}
+    restart: unless-stopped
+    # ports:
+    #   - "${LISTEN_PORT:-8000}:80"
+    networks:
+      - dvwa-net
+    cpus: 0.2
+    environment:
+      - RECAPTCHA_PRIV_KEY=${RECAPTCHA_PRIV_KEY:-}
+      - RECAPTCHA_PUB_KEY=${RECAPTCHA_PUB_KEY:-}
+      - SECURITY_LEVEL=${SECURITY_LEVEL:-medium}
+      - PHPIDS_ENABLED=${PHPIDS_ENABLED:-0}
+      - PHPIDS_VERBOSE=${PHPIDS_VERBOSE:-0}
+      - PHP_DISPLAY_ERRORS=${PHP_DISPLAY_ERRORS:-0}
+      - MYSQL_HOSTNAME=dvwa_db
+      - MYSQL_DATABASE=dvwa
+      - MYSQL_USERNAME=dvwa
+      - MYSQL_PASSWORD=p@ssw0rd
+    expose:
+      - "80"
+    dns: 8.8.8.8
+    labels:
+      - traefik.enable=true
+      - traefik.port=80
+      - traefik.http.routers.dvwa.rule=Host(`dvwa.example.org`)
+      - traefik.http.routers.dvwa.tls=true
+      - traefik.http.routers.dvwa.entrypoints=websecure
+      - traefik.http.routers.dvwa.tls.certresolver=myresolver
+
+  dvwa_db:
+    image: mysql:5.6
+    hostname: dvwa_db
+    cpus: 0.2
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: dvwa
+      MYSQL_USER: dvwa
+      MYSQL_PASSWORD: p@ssw0rd
+    restart: unless-stopped
+    networks:
+      - dvwa-net
+
+networks:
+  dvwa-net:
+    driver: bridge
+
+

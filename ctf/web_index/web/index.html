@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        .p {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas">
+</canvas>
+<script type="text/javascript">
+    var canvas = document.getElementById('canvas'),
+
+        context = canvas.getContext('2d'),
+        w = canvas.width = window.innerWidth,
+        h = canvas.height = window.innerHeight;
+
+    //初始化
+    var clearColor = 'rgba(0, 0, 0, .1)',             //用于绘制渐变阴影
+        wordColor = "#33ff33",                        //文字颜色
+        words = "0123456789qwertyuiopasdfghjklzxcvbnm,./;'\[]QWERTYUIOP{}ASDFGHJHJKL:ZXCVBBNM<>?",
+        wordsArr = words.split(''),                  //将文字拆分进一个数组
+        font_size = 16,  							//字体大小
+        columns = w / font_size,                     //文字降落的列数
+        drops = [];
+
+    for (var i = 0; i < columns; i++) {
+        drops[i] = 1;
+    }
+
+    function draw() {
+        context.save();
+        context.fillStyle = wordColor;
+        context.font = font_size + "px arial";
+        //核心
+        for (var i = 0; i < drops.length; i++) {
+            var text = wordsArr[Math.floor(Math.random() * wordsArr.length)];
+            context.fillText(text, i * font_size, drops[i] * font_size);
+
+            context.save();
+            text_test();
+            context.restore();
+
+            if (drops[i] * font_size > h && Math.random() > 0.98) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+
+        context.restore();
+    }
+
+    canvas.addEventListener('click', function (e) {
+        p = getEventPosition(e);
+        //判断点击了那个矩形
+        if (p.y <= 30) {
+            console.log('你点击了第一个矩形', p);
+            window.location.href = "./dvwa_loading.html";
+        }
+        if (p.y > 30 && p.y <= (60)) {
+            console.log('你点击了第二个矩形', p);
+            window.location.href = "./upload_loading.html";
+        }
+        if (p.y > 60 && p.y <= 90) {
+            console.log('你点击了第三个矩形', p);
+            window.location.href = "./sqli_loading.html";
+        }
+    }, false);
+
+    //注：使用这个函数，需要给Canvas元素的position设为absolute。
+    //要判断事件对象发生的位置，事件对象e的layerX和layerY属性表示Canvas内部坐标系中的坐标
+    function getEventPosition(ev) {
+        var x, y;
+        if (ev.layerX || ev.layerX == 0) {
+            x = ev.layerX;
+            y = ev.layerY;
+        } else if (ev.offsetX || ev.offsetX == 0) { // Opera
+            x = ev.offsetX;
+            y = ev.offsetY;
+        }
+        return {x: x, y: y};
+    }
+
+    function text_test() {
+        context.shadowOffsetX = 2;
+        context.shadowOffsetY = 2;
+        context.shadowBlur = 2;
+        context.shadowColor = "rgba(200, 100, 100, 0.5)";
+
+        context.font = "20px Times New Roman";
+        context.fillStyle = "Black";
+        context.fillText("dvwa.ctf.expoli.tech", 25, 30);
+        context.fillText("upload_labs.ctf.expoli.tech", 25, 60);
+        context.fillText("sqli_labs.ctf.expoli.tech", 25, 90);
+    }
+
+    //动画循环
+    (function drawFrame() {
+        window.requestAnimationFrame(drawFrame, canvas);
+        context.fillStyle = clearColor;
+        context.fillRect(0, 0, w, h);  //注意这
+        draw();
+    }())
+</script>
+</body>
+</html>

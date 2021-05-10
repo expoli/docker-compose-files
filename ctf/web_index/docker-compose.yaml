@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=80"
+      - "traefik.http.routers.ctf_loader.rule=Host(`ctf_index.example.org`)"
+      - "traefik.http.routers.ctf_loader.entrypoints=websecure"
+      - "traefik.http.routers.crf_loader.tls.certresolver=myresolver"
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
+
+    networks: 
+      - default
+
+networks: 
+  default:
