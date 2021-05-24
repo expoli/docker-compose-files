@@ -33,7 +33,7 @@ services:
       - traefik.http.routers.dvwa.tls.certresolver=myresolver
 
   dvwa_db:
-    image: mysql:5.7
+    image: mysql:8.0
     hostname: dvwa_db
     cpus: 0.2
     environment:
