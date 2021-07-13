@@ -32,7 +32,7 @@ services:
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       # 强制 HTTPS 跳转
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entryPoint.scheme=https
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       # 取消注释即可使用 prometheus 搜集性能数据
 #       - "--metrics.prometheus=true"
 #       - "--entryPoints.metrics.address=:8082"
