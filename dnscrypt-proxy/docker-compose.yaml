@@ -1,0 +1,25 @@
+version: '3.6'
+
+services:
+  server:
+    image: melchor9000/dnscrypt-proxy
+    ports:
+      - target: 5353
+        published: 53
+        protocol: udp
+        mode: host
+      - target: 5353
+        published: 53
+        protocol: tcp
+        mode: host
+    restart: always
+    volumes:
+      #Here I have the toml and txt files
+      #The cache is stored in another folder, but is not persisted
+      - "./conf/dnscrypt-proxy.toml:/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
+      - "./conf/chinalist.txt:/etc/dnscrypt-proxy/chinalist.txt"
+      - "./conf/cloaking-rules.txt:/etc/dnscrypt-proxy/cloaking-rules.txt"
+      - "./conf/resolvers:/etc/dnscrypt-proxy/resolvers"
+#    deploy:
+#      mode: replicated
+#      replicas: 2
