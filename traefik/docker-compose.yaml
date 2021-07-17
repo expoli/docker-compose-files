@@ -39,11 +39,11 @@ services:
 #       - "--metrics.prometheus.entryPoint=metrics"
 #       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
 #       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-    # ports:
-    #   - "80:80"
-    #   - "443:443"
-    #   - "8080:8080"
-    network_mode: host
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    # network_mode: host
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
