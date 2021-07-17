@@ -22,8 +22,11 @@ services:
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls.certresolver=myresolver"
     volumes:
+      # 数据持久化存储
       - ./grafana_data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
+      # 配置文件存放
+      # - ./grafana.ini:/etc/grafana/grafana.ini
     networks: 
       - proxy-tier
 
