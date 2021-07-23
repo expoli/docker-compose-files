@@ -20,7 +20,7 @@ services:
       - mysql_user
 
   app:
-    image: kodcloud/kodbox:v1.20
+    image: kodcloud/kodbox:v1.21
 #    ports:
 #      - 80:80
     links:
