@@ -17,7 +17,8 @@ services:
       - TZ="Asia/Shanghai"
     labels:
       - "traefik.enable=true"
-      - "traefik.port=3000"
+     # - "traefik.port=3000"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
       - "traefik.http.routers.grafana.rule=Host(`grafana.example.org`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls.certresolver=myresolver"
