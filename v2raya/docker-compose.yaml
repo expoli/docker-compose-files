@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  v2raya:
+    image: mzz2017/v2raya-nightly
+    network_mode: host
+    restart: always
+    volumes:
+      - /home/alarm/Docker/v2raya/config:/etc/v2raya
+   # privileged: true
+#    environment:
+#      - V2RAYA_ADDRESS=192.168.1.7:2017
+    cap_add:
+      - NET_ADMIN
+
