@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    # dns: 192.168.1.1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/prometheus_data/prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    network_mode: host
+    command:
+      - "--web.listen-address=192.168.1.7:9090"
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
