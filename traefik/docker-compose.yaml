@@ -41,7 +41,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"
+    #  - "8080:8080" # web 面板端口
     # network_mode: host
     volumes:
       - "./letsencrypt:/letsencrypt"
