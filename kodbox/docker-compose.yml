@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   db:
-    image: mariadb:10.6.4
+    image: mariadb:10.7.1
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
       - "./db:/var/lib/mysql"
