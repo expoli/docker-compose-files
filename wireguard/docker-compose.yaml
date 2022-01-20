@@ -1,0 +1,51 @@
+version: "3.4"
+
+services:
+  netmaker:
+    container_name: netmaker
+    image: gravitl/netmaker:v0.8.2
+    volumes:
+      - /etc/netclient/config:/etc/netclient/config
+      - dnsconfig:/root/config/dnsconfig
+      - /usr/bin/wg:/usr/bin/wg
+      - /data/sqldata/:/root/data
+    cap_add:
+      - NET_ADMIN
+    restart: always
+    network_mode: host
+    environment:
+      SERVER_HOST: "<public_ip>"
+      COREDNS_ADDR: "<public_ip>"
+      GRPC_SSL: "off"
+      DNS_MODE: "on"
+      CLIENT_MODE: "on"
+      API_PORT: "8081"
+      GRPC_PORT: "50051"
+      SERVER_GRPC_WIREGUARD: "off"
+      CORS_ALLOWED_ORIGIN: "*"
+      DATABASE: "sqlite"
+  netmaker-ui:
+    container_name: netmaker-ui
+    depends_on:
+      - netmaker
+    image: gravitl/netmaker-ui:v0.8
+    links:
+      - "netmaker:api"
+    ports:
+      - "80:80"
+    environment:
+      BACKEND_URL: "http://<public_ip>:8081"
+    restart: always
+    network_mode: host
+  coredns:
+    depends_on:
+      - netmaker
+    image: coredns/coredns
+    command: -conf /root/dnsconfig/Corefile
+    container_name: coredns
+    restart: always
+    network_mode: host
+    volumes:
+      - dnsconfig:/root/dnsconfig
+volumes:
+  dnsconfig: {}
