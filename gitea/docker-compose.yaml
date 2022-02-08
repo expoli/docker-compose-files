@@ -34,10 +34,10 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.gitea.rule=Host(`git.example.org`)
-      - traefik.http.services.gitea.loadbalancer.server.port=3000
       - traefik.http.routers.gitea.tls=true
       - traefik.http.routers.gitea.entrypoints=websecure
       - traefik.http.routers.gitea.tls.certresolver=myresolver
+      - traefik.http.services.gitea.loadbalancer.server.port=3000
 
   db:
     image: mysql:8

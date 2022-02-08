@@ -45,11 +45,10 @@ services:
       - nextcloud.env
     labels:
       - "traefik.enable=true"
-      - "traefik.port=80"
       - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.example.org`)"
-      # - "traefik.http.services.nextcloud.loadbalancer.server.port=5212"
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.tls.certresolver=myresolver"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
     networks: 
       - default
       - proxy-tier

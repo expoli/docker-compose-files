@@ -23,18 +23,17 @@ services:
       - /data/Cloudreve/aria2/downloads:/downloads
     network_mode: host
       #    networks: 
-      #- defaultt
-    restart: always
+      #- default
 
   cloudreve: 
     image: xavierniu/cloudreve:arm64v8
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.port=5212"
       - "traefik.http.routers.cloudreve.rule=Host(`cloudreve.exampl.org`)"
       - "traefik.http.routers.cloudreve.entrypoints=websecure"
       - "traefik.http.routers.cloudreve.tls.certresolver=myresolver"
+      - "traefik.http.services.cloudreve.loadbalancer.server.port=5212"
     environment: 
       - PUID=1000
       - PGID=1000

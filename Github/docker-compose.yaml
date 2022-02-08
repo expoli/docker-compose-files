@@ -5,7 +5,7 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.port=80"
+      - "traefik.http.services.github.loadbalancer.server.port=80"
       - "traefik.http.routers.github.rule=Host(`github.example.org`)"
       - "traefik.http.routers.github.entrypoints=websecure"
       - "traefik.http.routers.github.tls.certresolver=myresolver"
