@@ -35,11 +35,11 @@ services:
     dns: 8.8.8.8
     labels:
       - traefik.enable=true
-      - traefik.port=8080
       - traefik.http.routers.bolo.rule=Host(`blog.example.org`)
       - traefik.http.routers.bolo.tls=true
-      - "traefik.http.routers.cloudreve.entrypoints=websecure"
+      - traefik.http.routers.bolo.entrypoints=websecure
       - traefik.http.routers.bolo.tls.certresolver=myresolver
+      - traefik.http.services.bolo.loadbalancer.server.port=8080
     depends_on:
       - db
     networks:

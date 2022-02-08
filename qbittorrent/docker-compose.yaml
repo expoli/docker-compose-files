@@ -21,10 +21,10 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.port=80"
       - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.example.org`)"
       - "traefik.http.routers.qbittorrent.entrypoints=websecure"
       - "traefik.http.routers.qbittorrent.tls.certresolver=myresolver"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=80"
     depends_on:
       - qbittorrent
     networks:

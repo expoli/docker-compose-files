@@ -42,10 +42,10 @@ services:
       - mysql_user
     labels:
       - "traefik.enable=true"
-      - "traefik.port=80"
       - "traefik.http.routers.kodbox.rule=Host(`kodbox.example.org`)"
       - "traefik.http.routers.kodbox.entrypoints=websecure"
       - "traefik.http.routers.kodbox.tls.certresolver=myresolver"
+      - "traefik.http.services.kodbox.loadbalancer.server.port=80"
 
   redis:
     image: redis:alpine3.12
