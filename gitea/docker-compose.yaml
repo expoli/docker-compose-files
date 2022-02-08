@@ -1,0 +1,53 @@
+version: "3"
+
+networks:
+  gitea:
+    external: false
+
+services:
+  server:
+    image: gitea/gitea:1.16.0
+    container_name: gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - DB_TYPE=mysql
+      - DB_HOST=db:3306
+      - DB_NAME=gitea
+      - DB_USER=gitea
+      - DB_PASSWD=gitea
+      - DOMAIN=git.example.org
+      - SSH_DOMAIN=git.example.org
+      - SSH_PORT=2222
+    restart: always
+    networks:
+      - gitea
+    volumes:
+      - ./gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "3000:3000"
+      - "2222:2222"
+    depends_on:
+      - db
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.gitea.rule=Host(`git.example.org`)
+      - traefik.http.services.gitea.loadbalancer.server.port=3000
+      - traefik.http.routers.gitea.tls=true
+      - traefik.http.routers.gitea.entrypoints=websecure
+      - traefik.http.routers.gitea.tls.certresolver=myresolver
+
+  db:
+    image: mysql:8
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=gitea
+      - MYSQL_USER=gitea
+      - MYSQL_PASSWORD=gitea
+      - MYSQL_DATABASE=gitea
+    networks:
+      - gitea
+    volumes:
+      - ./mysql:/var/lib/mysql
