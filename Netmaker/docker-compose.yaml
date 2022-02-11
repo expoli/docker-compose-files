@@ -1,0 +1,99 @@
+version: "3.4"
+
+services:
+  netmaker:
+    container_name: netmaker
+    image: gravitl/netmaker:v0.9.4
+    volumes:
+      - dnsconfig:/root/config/dnsconfig
+      - /usr/bin/wg:/usr/bin/wg
+      - sqldata:/root/data
+    cap_add: 
+      - NET_ADMIN
+    restart: always
+    privileged: true
+    environment:
+      SERVER_HOST: "1.1.1.1"
+      SERVER_API_CONN_STRING: "api.netmaker.example.org:443"
+      SERVER_GRPC_CONN_STRING: "grpc.netmaker.example.org:50051"
+      COREDNS_ADDR: "1.1.1.1"
+      GRPC_SSL: "off"
+      DNS_MODE: "on"
+      SERVER_HTTP_HOST: "api.netmaker.example.org"
+      SERVER_GRPC_HOST: "grpc.netmaker.example.org"
+      API_PORT: "8081"
+      GRPC_PORT: "50051"
+      CLIENT_MODE: "on"
+      MASTER_KEY: "REPLACE_MASTER_KEY_MY"
+      SERVER_GRPC_WIREGUARD: "off"
+      CORS_ALLOWED_ORIGIN: "*"
+      DISPLAY_KEYS: "on"
+      DATABASE: "sqlite"
+      NODE_ID: "netmaker-server-1"
+    ports:
+      - "51821-51830:51821-51830/udp"
+      - "8081:8081"
+      - "50051:50051"
+    labels:
+      - "traefik.enable=true"
+     # - "traefik.port=3000"
+      - "traefik.http.routers.netmaker-api.rule=Host(`api.netmaker.example.org`)"
+      - "traefik.http.routers.netmaker-api.entrypoints=websecure"
+      - "traefik.http.routers.netmaker-api.tls.certresolver=myresolver"
+      - "traefik.http.routers.netmaker-api.service=svc_api"
+      - "traefik.http.services.svc_api.loadbalancer.server.port=8081"
+      
+      - "traefik.http.routers.netmaker-grpc.rule=Host(`grpc.netmaker.example.org`)"
+      - "traefik.http.routers.netmaker-grpc.entrypoints=web"
+      - "traefik.http.routers.netmaker-grpc.tls.certresolver=myresolver"
+      - "traefik.http.routers.netmaker-grpc.service=svc_grpc"
+      - "traefik.http.services.svc_grpc.loadbalancer.server.port=50051"
+
+  netmaker-ui:
+    container_name: netmaker-ui
+    depends_on:
+      - netmaker
+    image: gravitl/netmaker-ui:v0.9.3
+    links:
+      - "netmaker:api"
+    ports:
+      - "8082:80"
+    environment:
+      BACKEND_URL: "https://api.netmaker.example.org"
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.netmakerui.loadbalancer.server.port=80"
+      - "traefik.http.routers.netmakerui.rule=Host(`netmaker.example.org`)"
+      - "traefik.http.routers.netmakerui.entrypoints=websecure"
+      - "traefik.http.routers.netmakerui.tls.certresolver=myresolver"
+
+  coredns:
+    depends_on:
+      - netmaker 
+    image: coredns/coredns
+    command: -conf /root/dnsconfig/Corefile
+    container_name: coredns
+    restart: always
+    #ports:
+    #  - "COREDNS_IP:53:53/udp"
+    #  - "COREDNS_IP:53:53/tcp"
+    network_mode: host
+    volumes:
+      - dnsconfig:/root/dnsconfig
+#  caddy:
+#    image: caddy:latest
+#    container_name: caddy
+#    restart: unless-stopped
+#    network_mode: host # Wants ports 80 and 443!
+#    volumes:
+#      - ./Caddyfile:/etc/caddy/Caddyfile
+      # - $PWD/site:/srv # you could also serve a static site in site folder
+#      - caddy_data:/data
+#      - caddy_conf:/config
+volumes:
+  caddy_data: {}
+  caddy_conf: {}
+  sqldata: {}
+  dnsconfig: {}
+
