@@ -9,7 +9,7 @@ services:
     expose:
       - "80"
     dns: 8.8.8.8
-    cpus: 0.2
+    user: www-data
     labels:
       - traefik.enable=true
       - traefik.port=80
