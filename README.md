@@ -99,3 +99,8 @@ Server = redis:6379
 Password =
 DB = 0
 ```
+
+
+### Infrastructure model
+
+![Infrastructure model](.infragenie/infrastructure_model.png)
