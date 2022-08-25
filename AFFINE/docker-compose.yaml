@@ -1,0 +1,24 @@
+version: "2"
+
+services:
+  affine:
+    image: ghcr.io/toeverything/affine:nightly-latest
+    expose:
+      - 3000
+    user: "10000"
+    restart: always
+    logging: 
+      options: 
+        max-size: 1m
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.affine.rule=Host(`affine.example.com`)"
+      - "traefik.http.routers.affine.entrypoints=websecure"
+      - "traefik.http.routers.affine.tls.certresolver=myresolver"
+      - "traefik.http.services.affine.loadbalancer.server.port=3000"
+
+    networks: 
+      - default
+
+networks:
+  default:
