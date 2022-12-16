@@ -4,7 +4,8 @@ services:
   aliyun-ddns:
     image: sanjusss/aliyun-ddns
     container_name: aliyun-ddns
-
+    env_file:
+      - .env
     network_mode: host
 networks:
   default:

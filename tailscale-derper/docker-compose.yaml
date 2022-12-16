@@ -22,7 +22,8 @@ services:
       - "--stun=$DERP_STUN"
       - "--verify-clients=$DERP_VERIFY_CLIENTS"
       - "--stun-port=$DERP_STUN_PORT"
-
+    env_file:
+      - .env
     networks:
       - default
 networks:
