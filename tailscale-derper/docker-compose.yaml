@@ -1,0 +1,29 @@
+version: '3.7'
+
+services: 
+  tailscale-derper:
+    image: fredliang/derper
+    container_name: tailscale-derper
+    volumes:
+      - ./certs:/app/certs
+    ports:
+      - 8443:8443
+#      - 443:443
+      - 3478:3478/udp
+    expose:
+      - 80
+      - 443
+    command:
+      - "/app/derper"
+      - "--hostname=$DERP_DOMAIN"
+      - "--certmode=$DERP_CERT_MODE"
+      - "--certdir=$DERP_CERT_DIR"
+      - "--a=$DERP_ADDR"
+      - "--stun=$DERP_STUN"
+      - "--verify-clients=$DERP_VERIFY_CLIENTS"
+      - "--stun-port=$DERP_STUN_PORT"
+
+    networks:
+      - default
+networks:
+  default:
