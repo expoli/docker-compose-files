@@ -1,0 +1,24 @@
+version: '3.3'
+services:
+  alist:
+    restart: always
+    volumes:
+      - '/etc/alist:/opt/alist/data'
+      - /data/1tb:/data/1tb
+      #ports:
+      #    - '5244:5244'
+    expose:
+      - 5244
+    environment:
+        - PUID=1000
+        - PGID=1000
+        - UMASK=022
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.alist.rule=Host(`home.example.org`) && Path(`/alist`) || Host(`alist.example.org`)"
+      - "traefik.http.routers.alist.entrypoints=websecure"
+      - "traefik.http.routers.alist.tls.certresolver=myresolver"
+      - "traefik.http.services.alist.loadbalancer.server.port=5244"
+
+    container_name: alist
+    image: 'xhofe/alist:latest'
